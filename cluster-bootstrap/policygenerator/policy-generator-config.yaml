@@ -1,0 +1,38 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: cluster-bootstrap-policy-generator
+policyDefaults:
+  namespace: acm-policies
+  remediationAction: enforce
+  orderPolicies: true
+placementBindingDefaults:
+  name: "binding-policy-bootstrap"
+policies:
+  - name: policy-sealed-secrets-key
+    remediationAction: enforce
+    manifests:
+      - path: manifests/sealed-secrets-key/
+  - name: policy-openshift-gitops
+    remediationAction: enforce
+    manifests:
+      - path: manifests/openshift-gitops/
+  - name: policy-sealed-secrets-app
+    remediationAction: enforce
+    manifests:
+      - path: manifests/sealed-secrets-app/
+  - name: policy-cluster-config-app
+    remediationAction: enforce
+    manifests:
+      - path: manifests/cluster-config-app/
+policySets:
+  - name: "cluster-bootstrap"
+    description: "Policy for bootstrapping cluster with ArgoCD and sealed-secrets"
+    policies:
+      - policy-sealed-secrets-key
+      - policy-openshift-gitops
+      - policy-sealed-secrets-app
+      - policy-cluster-config-app
+    generatePolicySetPlacement: false
+    placement:
+      name: dev-placement

@@ -1,0 +1,23 @@
+---
+apiVersion: policy.open-cluster-management.io/v1beta1
+kind: OperatorPolicy
+metadata:
+  name: openshift-gitops-operator-install
+spec:
+  complianceType: musthave
+  complianceConfig:
+    catalogSourceUnhealthy: NonCompliant
+    deploymentsUnavailable: NonCompliant
+    upgradesAvailable: Compliant
+  remediationAction: enforce
+  removalBehavior:
+    clusterServiceVersions: Delete
+    customResourceDefinitions: Delete
+    operatorGroups: DeleteIfUnused
+    subscriptions: Delete
+  severity: critical
+  upgradeApproval: Automatic
+  subscription:
+    channel: gitops-1.14
+    name: openshift-gitops-operator
+    namespace: openshift-gitops-operator
