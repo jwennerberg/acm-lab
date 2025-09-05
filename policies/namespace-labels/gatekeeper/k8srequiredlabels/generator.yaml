@@ -1,0 +1,29 @@
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: gk-policy-generator-zm-label
+policyDefaults:
+  namespace: acm-policies
+  remediationAction: inform
+  consolidateManifests: false
+  informGatekeeperPolicies: false
+  policySets:
+    - gk-zm
+placementBindingDefaults:
+  name: "gk-require-zm-binding"
+
+policies:
+  - name: gk-zm-label
+    remediationAction: inform
+#     dependencies:
+#       - name: "gatekeeper-instance"
+#         compliance: "Compliant"
+    manifests:
+      - path: manifests/template.yaml
+      - path: manifests/constraint.yaml
+
+policySets:
+  - name: gk-zm
+    placement:
+      placementName: "all-clusters"

@@ -1,0 +1,50 @@
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: k8srequirednamespacelabel
+  annotations:
+    metadata.gatekeeper.sh/title: "Required Namespace Label"
+    metadata.gatekeeper.sh/description: "Requires Pods to be in a namespace with a specific label."
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sRequiredNamespaceLabel
+      validation:
+        # Schema for the parameters
+        openAPIV3Schema:
+          type: object
+          properties:
+            label:
+              type: string
+            value:
+              type: string
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8srequirednamespacelabel
+
+        violation[{"msg": msg}] {
+          pod_namespace := input.review.object.metadata.namespace
+          ns := data.inventory.cluster["v1"]["Namespace"][pod_namespace]
+
+          required_label := input.parameters.label
+          required_value := input.parameters.value
+
+          not ns.metadata.labels[required_label]
+
+          msg := sprintf("Pods are not allowed in namespace '%v' without the label '%v'", [pod_namespace, required_label])
+        }
+
+        violation[{"msg": msg}] {
+          pod_namespace := input.review.object.metadata.namespace
+          ns := data.inventory.cluster["v1"]["Namespace"][pod_namespace]
+
+          required_label := input.parameters.label
+          required_value := input.parameters.value
+
+          actual_value := ns.metadata.labels[required_label]
+          actual_value != required_value
+
+          msg := sprintf("Namespace '%v' must have label '%v: %v'", [pod_namespace, required_label, required_value])
+        }

@@ -1,0 +1,17 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRequiredNamespaceLabel
+metadata:
+  name: namespace-must-have-zm-enforced
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    namespaceSelector:
+      matchLabels:
+        platform-onboarded: "true"
+
+  parameters:
+    label: "zm-enforced"
+    value: "true"
+    message: "Onboarded namespaces must have a zm-enforced label"

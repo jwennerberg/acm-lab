@@ -1,0 +1,22 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRequiredLabels
+metadata:
+  annotations:
+    policy.open-cluster-management.io/severity: high
+  name: ns-must-have-zm-label
+spec:
+  enforcementAction: dryrun
+  match:
+    kinds:
+    - apiGroups:
+      - ""
+      kinds:
+      - Namespace
+    labelSelector:
+      matchLabels:
+        platform-onboarded: "true"
+  parameters:
+    labels:
+      - key: zm-enforced
+        value: "true"
+    message: "All onboarded namespaces must have a zm-enforced label"
